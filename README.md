@@ -19,9 +19,13 @@ pip install webmention-tools
 Usage: 
 ========
 
-webmention-send.py source target
+Command line:
+
+    webmention-send.py source target
 
 or
+
+Python code:
 
     from webmentiontools.send import WebmentionSend
     mention = WebmentionSend(source, target)
