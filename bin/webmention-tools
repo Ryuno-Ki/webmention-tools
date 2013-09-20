@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 Usage:
-  webmention-send.py [options] <source> <target> 
-  webmention-send.py -h, --help
-  webmention-send.py --version
+  webmention-tools [options] send <source> <target> 
+  webmention-tools [options] urlinfo <url>
+  webmention-tools -h, --help
+  webmention-tools --version
 
 Options:
     --debug   	Show error messages [default: False].
@@ -12,20 +13,33 @@ Options:
 You can also use this as a python library. See source.
 """
 from webmentiontools import __version__
-from webmentiontools.send import WebmentionSend 
 from docopt import docopt
 from pprint import pprint
 
 args = docopt(__doc__, version=__version__)
 
-if args['<source>'] and args['<target>']:
-    # This is how you can use the library.
-    # Just initialize WebmentionSend with source, target and call send().
-    # 
-    mention = WebmentionSend(source=args['<source>'], target=args['<target>'])
-    if mention.send():
-        print 'Success!'
+if args['send']:
+    from webmentiontools.send import WebmentionSend 
+    if args['<source>'] and args['<target>']:
+        # This is how you can use the library.
+        # Just initialize WebmentionSend with source, target and call send().
+        # 
+        mention = WebmentionSend(source=args['<source>'], target=args['<target>'])
+        if mention.send():
+            print 'Success!'
+        else:
+            print 'Failed'
+            if args['--debug']:
+                pprint(mention.error)
+if args['urlinfo']:
+    from webmentiontools.urlinfo import UrlInfo
+    url = args['<url>']
+    i = UrlInfo(url)
+    if i.error:
+        print 'There was an error getting %s' % url
     else:
-        print 'Failed'
-        if args['--debug']:
-            pprint(mention.error)
+        print 'in-reply-to link: %s' % i.inReplyTo()
+        print 'publication date: %s' % i.pubDate()
+        print 'page title: %s' % i.title()
+        print 'image link: %s' % i.image()
+
