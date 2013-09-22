@@ -3,6 +3,8 @@ webmention-tools
 
 Some simple tools in python to deal with webmentions.
 
+
+
 Currently: 
 
 - webmentiontools.send implements WebmentionSend 
@@ -11,10 +13,16 @@ that sends webmentions.
 will rerurn usefull information about a web page, like 
 title, the existance of an "in-reply-to" link,
 the author name, the author image, etc.
+- webmentiontoold.webmentionio provides a class to query
+webmention.io
 
 There is also the corresponting command line tool, 
 webmention-tools (which is also a simple example on how 
 to use the library.
+
+Check bin/demp.py on how to use the library to query 
+webmention.io and present information for all URLs that
+mentioned http://indiewebcamp.com/webmention
 
 
 Installation
@@ -32,13 +40,15 @@ Command line:
 
 or
 
-Python code:
+Python code to send a webmention:
 
     from webmentiontools.send import WebmentionSend
     source = 'URL of page sending the webmention'
     target = 'URL of page to receive the webmention'
     mention = WebmentionSend(source, target)
     mention.send()
+
+Python code to get info about a webpage.
 
     from webmentiontools.urlinfo import UrlInfo
     url = 'a link to a web page'
