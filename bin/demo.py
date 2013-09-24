@@ -12,7 +12,8 @@ webmention_io_token = None
 wio = WebmentionIO(webmention_io_token)
 
 # Get all links "mentioning" http://indiewebcamp.com/webmention
-ret = wio.linksToURL('http://indiewebcamp.com/webmention')
+target_url = 'http://indiewebcamp.com/webmention'
+ret = wio.linksToURL(target_url)
 
 if not ret:
     print wio.error
@@ -32,3 +33,4 @@ else:
         print '        Pub Date: %s' % info.pubDate()
         print '        in-reply-to: %s' % info.inReplyTo()
         print '        Author image: %s' % info.image()
+        print '        Snippet: %s' % info.snippetWithLink(target_url)

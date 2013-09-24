@@ -69,6 +69,19 @@ class UrlInfo():
                 self.data['image'] = image['src']
                 return image['src']
 
+    def snippetWithLink(self, url):
+        """ This method will try to return the first
+        <p> or <div> that contains an <a> tag linking to
+        the given URL.
+        """
+        link = self.soup.find("a", attrs={'href': url})
+        if link:
+            for p in link.parents:
+                if p.name == "p" or p.name == "div":
+                    return p.text
+        return None
+
+
     def linksTo(self, url):
         # Check if page links to a specific URL.
         # please note that the test is done on the *exact* URL. If
