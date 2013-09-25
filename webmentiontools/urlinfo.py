@@ -55,6 +55,8 @@ class UrlInfo():
     def image(self):
         if self.data.has_key('image'):
             return self.data['image']
+
+        #Try using p-author
         author = self.soup.find(True, attrs={'class':'p-author'})
         if author:
             image = author.find('img')
@@ -62,12 +64,22 @@ class UrlInfo():
                 image_src = image['src']
                 self.data['image'] = image_src
                 return image_src
+
+        # Try using h-card
         hcard = self.soup.find(True, attrs={'class':'h-card'})
         if hcard:
             image = hcard.find('img', attrs={'class':'u-photo'})
             if image:
                 self.data['image'] = image['src']
                 return image['src']
+
+        # Last resort: try using rel="apple-touch-icon-precomposed"
+        apple_icon = self.soup.find('link', attrs={'rel':'apple-touch-icon-precomposed'})
+        if apple_icon:
+            image = apple_icon['href']
+            if image:
+                self.data['image'] = image
+                return image
 
     def snippetWithLink(self, url):
         """ This method will try to return the first
