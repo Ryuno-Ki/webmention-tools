@@ -2,15 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 Usage:
-  webmention-tools [options] send <source> <target> 
-  webmention-tools [options] urlinfo <url>
+  webmention-tools [options] send SOURCE TARGET 
+  webmention-tools [options] send -f [FILE]
+  webmention-tools [options] urlinfo URL
   webmention-tools -h, --help
   webmention-tools --version
 
 Options:
     --debug   	Show error messages [default: False].
 
-You can also use this as a python library. See source.
+send -f will read (SOURCE, TARGET) pairs from the FILE,
+    one pair per line.
+    STDIN will be used if no FILE is given.
 """
 from webmentiontools import __version__
 from docopt import docopt
@@ -18,22 +21,44 @@ from pprint import pprint
 
 args = docopt(__doc__, version=__version__)
 
-if args['send']:
+if args['send'] and args['SOURCE'] and args['TARGET']:
     from webmentiontools.send import WebmentionSend 
-    if args['<source>'] and args['<target>']:
-        # This is how you can use the library.
-        # Just initialize WebmentionSend with source, target and call send().
-        # 
-        mention = WebmentionSend(source=args['<source>'], target=args['<target>'])
-        if mention.send():
-            print 'Success!'
-        else:
-            print 'Failed'
-            if args['--debug']:
-                pprint(mention.error)
+    # This is how you can use the library.
+    # Just initialize WebmentionSend with source, target and call send().
+    # 
+    print 'Sending webmention from %s to %s... ' % (args['SOURCE'], args['TARGET']),
+    mention = WebmentionSend(source=args['SOURCE'], target=args['TARGET'])
+    if mention.send():
+        print 'Success!'
+    else:
+        print 'Failed'
+        if args['--debug']:
+            pprint(mention.error)
+
+if args['send'] and args['-f']:
+    import sys
+    from webmentiontools.send import WebmentionSend 
+    if args['FILE']:
+        f = open(args['FILE'], 'r')
+    else:
+        f = sys.stdin
+    for line in f:
+        params=line.strip().split()
+        if len(params) == 2:
+            print 'Sending webmention from %s to %s... ' % (params[0], params[1]) ,
+            mention = WebmentionSend(source=params[0], target=params[1])
+            if mention.send():
+                print 'Success!'
+            else:
+                print 'Failed'
+                if args['--debug']:
+                    pprint(mention.error)
+    if f is not sys.stdin:
+        f.close()
+
 if args['urlinfo']:
     from webmentiontools.urlinfo import UrlInfo
-    url = args['<url>']
+    url = args['URL']
     i = UrlInfo(url)
     if i.error:
         print 'There was an error getting %s' % url
