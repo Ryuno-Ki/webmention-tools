@@ -90,8 +90,8 @@ class UrlInfo():
         link = self.soup.find("a", attrs={'href': url})
         if link:
             for p in link.parents:
-                if p.name == "p" or p.name == "div":
-                    return p.text
+                if p.name in ('p','div'):
+                    return ' '.join(p.text.split()[0:30])
         return None
 
 
