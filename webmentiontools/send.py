@@ -30,7 +30,11 @@ class WebmentionSend():
             return False
         html = r.text
         soup = BeautifulSoup(html)
-        tag = soup.find('link', attrs={'rel':'http://webmention.org/', 'rel':'webmention'})
+        tag = soup.find('link', attrs={'rel': 'webmention'})
+        if not tag:
+            # backward compatibility with the webmention 0.1 spec
+            tag = soup.find('link', attrs={'rel': 'http://webmention.org/'})
+
         if tag and tag['href']:
             self.receiver_endpoint = tag['href']
             return True
