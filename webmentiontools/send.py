@@ -55,8 +55,8 @@ class WebmentionSend():
                 'code':'RECEIVER_ERROR',
                 'request': 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url),
                 'http_status': r.status_code,
-                'error': response['error'],
-                'error_description': response['error_description']
+                'error': response.get('error'),
+                'error_description': response.get('error_description')
             }
             return False
         else:
