@@ -50,16 +50,23 @@ class WebmentionSend():
         headers = {'Accept': 'application/json'}
         r = requests.post(self.receiver_endpoint, data=payload)
         response = r.json()
-        if r.status_code != 202:
+
+        request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
+        if r.status_code / 100 != 2:
             self.error = {
                 'code':'RECEIVER_ERROR',
-                'request': 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url),
+                'request': request_str,
                 'http_status': r.status_code,
                 'error': response.get('error'),
                 'error_description': response.get('error_description')
             }
             return False
         else:
+            self.response = {
+                'request': request_str,
+                'http_status': r.status_code,
+                'body': r.text
+            }
             return True
 
 if __name__ == '__main__':
