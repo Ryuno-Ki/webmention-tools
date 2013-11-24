@@ -11,15 +11,16 @@ class WebmentionSend():
         self.target_url = target
         self.receiver_endpoint = None
 
-    def send(self):
+    def send(self, **kwargs):
         self.error = None
+        self.requests_kwargs = kwargs
         r = self._discoverEndpoint()
         if not r:
             return False
         return self._notifyReceiver()
 
     def _discoverEndpoint(self):
-        r = requests.get(self.target_url)
+        r = requests.get(self.target_url, **self.requests_kwargs)
         if r.status_code != 200:
             self.error = {
                 'code':'BAD_TARGET_URL',
@@ -48,7 +49,7 @@ class WebmentionSend():
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
         headers = {'Accept': 'application/json'}
-        r = requests.post(self.receiver_endpoint, data=payload)
+        r = requests.post(self.receiver_endpoint, data=payload, **self.requests_kwargs)
         response = r.json()
 
         request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
