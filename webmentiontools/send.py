@@ -11,15 +11,16 @@ class WebmentionSend():
         self.target_url = target
         self.receiver_endpoint = None
 
-    def send(self):
+    def send(self, **kwargs):
         self.error = None
+        self.requests_kwargs = kwargs
         r = self._discoverEndpoint()
         if not r:
             return False
         return self._notifyReceiver()
 
     def _discoverEndpoint(self):
-        r = requests.get(self.target_url)
+        r = requests.get(self.target_url, **self.requests_kwargs)
         if r.status_code != 200:
             self.error = {
                 'code':'BAD_TARGET_URL',
@@ -48,18 +49,26 @@ class WebmentionSend():
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
         headers = {'Accept': 'application/json'}
-        r = requests.post(self.receiver_endpoint, data=payload)
-        response = r.json()
-        if r.status_code != 202:
+        r = requests.post(self.receiver_endpoint, data=payload, **self.requests_kwargs)
+
+        request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
+        if r.status_code / 100 != 2:
             self.error = {
                 'code':'RECEIVER_ERROR',
-                'request': 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url),
+                'request': request_str,
                 'http_status': r.status_code,
-                'error': response.get('error'),
-                'error_description': response.get('error_description')
-            }
+                }
+            try:
+                self.error.update(r.json())
+            except:
+                self.error.body = r.text
             return False
         else:
+            self.response = {
+                'request': request_str,
+                'http_status': r.status_code,
+                'body': r.text
+            }
             return True
 
 if __name__ == '__main__':
