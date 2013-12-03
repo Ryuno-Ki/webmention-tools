@@ -20,6 +20,8 @@ class UrlInfo():
         if r.status_code != 200:
             self.error = True
             return
+	# use apparent_encoding, seems to work better in the cases I tested.
+    	r.encoding = r.apparent_encoding 
         self.soup = BeautifulSoup(r.text)
 
     def inReplyTo(self):
