@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import urlparse
 import requests
 from bs4 import BeautifulSoup
 
@@ -37,7 +38,8 @@ class WebmentionSend():
             tag = soup.find('link', attrs={'rel': 'http://webmention.org/'})
 
         if tag and tag['href']:
-            self.receiver_endpoint = tag['href']
+            # add the base scheme and host to relative endpoints
+            self.receiver_endpoint = urlparse.urljoin(self.target_url, tag['href'])
             return True
         else:
             self.error = {
