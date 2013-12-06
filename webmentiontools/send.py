@@ -61,7 +61,7 @@ class WebmentionSend():
             try:
                 self.error.update(r.json())
             except:
-                self.error.body = r.text
+                self.error['body'] = r.text
             return False
         else:
             self.response = {
