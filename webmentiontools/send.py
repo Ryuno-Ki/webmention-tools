@@ -50,7 +50,7 @@ class WebmentionSend():
 
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
-        headers = {'Accept': 'application/json'}
+        headers = {'Accept': '*/*'}
         r = requests.post(self.receiver_endpoint, data=payload, **self.requests_kwargs)
 
         request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
