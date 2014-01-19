@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import urlparse
+import re
 import requests
 from bs4 import BeautifulSoup
 
 class WebmentionSend():
+
+    LINK_HEADER_RE = re.compile(
+        r'''<([^>]+)>; rel=["'](http://)?webmention(\.org/?)?["']''')
 
     def __init__(self, source, target):
         self.source_url = source
@@ -21,7 +25,7 @@ class WebmentionSend():
         return self._notifyReceiver()
 
     def _discoverEndpoint(self):
-        r = requests.get(self.target_url, **self.requests_kwargs)
+        r = requests.get(self.target_url, verify=False, **self.requests_kwargs)
         if r.status_code != 200:
             self.error = {
                 'code':'BAD_TARGET_URL',
@@ -30,6 +34,18 @@ class WebmentionSend():
                 'http_status': r.status_code,
             }
             return False
+
+        # look in the headers
+        # XXX: it looks like requests doesn't handle multiple headers with the
+        # same name, e.g. 'Link'. from skimming the code, it looks like the last
+        # one wins. ugh. :/
+        for link in r.headers.get('link', '').split(','):
+            match = self.LINK_HEADER_RE.search(link)
+            if match:
+                self.receiver_endpoint = match.group(1)
+                return True
+
+        # look in the content
         html = r.text
         soup = BeautifulSoup(html)
         tag = soup.find('link', attrs={'rel': 'webmention'})
@@ -51,7 +67,7 @@ class WebmentionSend():
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
         headers = {'Accept': '*/*'}
-        r = requests.post(self.receiver_endpoint, data=payload, **self.requests_kwargs)
+        r = requests.post(self.receiver_endpoint, verify=False, data=payload, **self.requests_kwargs)
 
         request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
         if r.status_code / 100 != 2:
