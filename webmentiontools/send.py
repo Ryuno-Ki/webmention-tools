@@ -11,16 +11,17 @@ class WebmentionSend():
     LINK_HEADER_RE = re.compile(
         r'''<([^>]+)>; rel=["'](http://)?webmention(\.org/?)?["']''')
 
-    def __init__(self, source, target):
+    def __init__(self, source, target, endpoint=None):
         self.source_url = source
         self.target_url = target
-        self.receiver_endpoint = None
+        self.receiver_endpoint = endpoint
 
     def send(self, **kwargs):
         self.error = None
         self.requests_kwargs = kwargs
-        r = self._discoverEndpoint()
-        if not r:
+        if not self.receiver_endpoint:
+            self._discoverEndpoint()
+        if not self.receiver_endpoint:
             return False
         return self._notifyReceiver()
 
@@ -33,7 +34,7 @@ class WebmentionSend():
                 'request': 'GET %s' % self.target_url,
                 'http_status': r.status_code,
             }
-            return False
+            return
 
         # look in the headers
         # XXX: it looks like requests doesn't handle multiple headers with the
@@ -43,7 +44,7 @@ class WebmentionSend():
             match = self.LINK_HEADER_RE.search(link)
             if match:
                 self.receiver_endpoint = match.group(1)
-                return True
+                return
 
         # look in the content
         html = r.text
@@ -56,13 +57,11 @@ class WebmentionSend():
         if tag and tag['href']:
             # add the base scheme and host to relative endpoints
             self.receiver_endpoint = urlparse.urljoin(self.target_url, tag['href'])
-            return True
         else:
             self.error = {
                 'code': 'NO_ENDPOINT',
                 'error_description': 'Unable to discover webmention endpoint.'
             }
-            return False
 
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
