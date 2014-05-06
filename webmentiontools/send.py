@@ -49,12 +49,14 @@ class WebmentionSend():
         # look in the content
         html = r.text
         soup = BeautifulSoup(html)
-        tag = soup.find('link', attrs={'rel': 'webmention'})
-        if not tag:
-            # backward compatibility with the webmention 0.1 spec
-            tag = soup.find('link', attrs={'rel': 'http://webmention.org/'})
+        tag = None
+        for name in 'link', 'a':
+            for rel in 'webmention', 'http://webmention.org/':
+                tag = soup.find(name, attrs={'rel': rel})
+                if tag:
+                    break
 
-        if tag and tag['href']:
+        if tag and tag.get('href'):
             # add the base scheme and host to relative endpoints
             self.receiver_endpoint = urlparse.urljoin(self.target_url, tag['href'])
         else:
