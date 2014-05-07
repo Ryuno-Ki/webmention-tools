@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import itertools
 import urlparse
 import re
 import requests
@@ -50,11 +51,10 @@ class WebmentionSend():
         html = r.text
         soup = BeautifulSoup(html)
         tag = None
-        for name in 'link', 'a':
-            for rel in 'webmention', 'http://webmention.org/':
-                tag = soup.find(name, attrs={'rel': rel})
-                if tag:
-                    break
+        for name, rel in itertools.product(('link', 'a'), ('webmention', 'http://webmention.org/')):
+            tag = soup.find(name, attrs={'rel': rel})
+            if tag:
+                break
 
         if tag and tag.get('href'):
             # add the base scheme and host to relative endpoints
