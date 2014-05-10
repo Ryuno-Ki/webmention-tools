@@ -36,6 +36,7 @@ class WebmentionSend():
                 'http_status': r.status_code,
             }
             return
+        self.html = r.text
 
         # look in the headers
         # XXX: it looks like requests doesn't handle multiple headers with the
@@ -48,8 +49,7 @@ class WebmentionSend():
                 return
 
         # look in the content
-        html = r.text
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(self.html)
         tag = None
         for name, rel in itertools.product(('link', 'a'), ('webmention', 'http://webmention.org/')):
             tag = soup.find(name, attrs={'rel': rel})
