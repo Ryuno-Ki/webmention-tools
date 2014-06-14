@@ -45,7 +45,8 @@ class WebmentionSend():
         for link in r.headers.get('link', '').split(','):
             match = self.LINK_HEADER_RE.search(link)
             if match:
-                self.receiver_endpoint = match.group(1)
+                self.receiver_endpoint = urlparse.urljoin(self.target_url,
+                                                          match.group(1))
                 return
 
         # look in the content
