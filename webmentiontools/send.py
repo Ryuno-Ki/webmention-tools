@@ -1,11 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import itertools
-import urlparse
 import re
 import requests
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+
 
 class WebmentionSend():
 
@@ -30,7 +31,7 @@ class WebmentionSend():
         r = requests.get(self.target_url, verify=False, **self.requests_kwargs)
         if r.status_code != 200:
             self.error = {
-                'code':'BAD_TARGET_URL',
+                'code': 'BAD_TARGET_URL',
                 'error_description': 'Unable to get target URL.',
                 'request': 'GET %s' % self.target_url,
                 'http_status': r.status_code,
@@ -45,21 +46,25 @@ class WebmentionSend():
         for link in r.headers.get('link', '').split(','):
             match = self.LINK_HEADER_RE.search(link)
             if match:
-                self.receiver_endpoint = urlparse.urljoin(self.target_url,
-                                                          match.group(1))
+                self.receiver_endpoint = urljoin(self.target_url,
+                                                 match.group(1))
                 return
 
         # look in the content
         soup = BeautifulSoup(self.html)
         tag = None
-        for name, rel in itertools.product(('link', 'a'), ('webmention', 'http://webmention.org/')):
+        for name, rel in itertools.product(
+            ('link', 'a'), ('webmention', 'https://webmention.org/')
+        ):
             tag = soup.find(name, attrs={'rel': rel})
             if tag:
                 break
 
         if tag and tag.get('href'):
             # add the base scheme and host to relative endpoints
-            self.receiver_endpoint = urlparse.urljoin(self.target_url, tag['href'])
+            self.receiver_endpoint = urljoin(
+                self.target_url, tag['href']
+            )
         else:
             self.error = {
                 'code': 'NO_ENDPOINT',
@@ -68,13 +73,21 @@ class WebmentionSend():
 
     def _notifyReceiver(self):
         payload = {'source': self.source_url, 'target': self.target_url}
-        headers = {'Accept': '*/*'}
-        r = requests.post(self.receiver_endpoint, verify=False, data=payload, **self.requests_kwargs)
+        r = requests.post(
+            self.receiver_endpoint,
+            verify=False,
+            data=payload,
+            **self.requests_kwargs
+        )
 
-        request_str = 'POST %s (with source=%s, target=%s)' % (self.receiver_endpoint, self.source_url, self.target_url)
+        request_str = 'POST %s (with source=%s, target=%s)' % (
+            self.receiver_endpoint,
+            self.source_url,
+            self.target_url
+        )
         if r.status_code / 100 != 2:
             self.error = {
-                'code':'RECEIVER_ERROR',
+                'code': 'RECEIVER_ERROR',
                 'request': request_str,
                 'http_status': r.status_code,
                 }
