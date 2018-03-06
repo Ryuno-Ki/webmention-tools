@@ -1,23 +1,24 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import requests
 import json
 
+
 class WebmentionIO():
-    # Basic library for http://webmention.io/ API
+    # Basic library for https://webmention.io/ API
 
     def __init__(self, access_token=None):
         self.access_token = access_token
-        self.api_endpoint = 'http://webmention.io/api'
+        self.api_endpoint = 'https://webmention.io/api'
 
     def api_links_req(self, k, v):
         if k not in (None, 'target', 'domain'):
             return False
         url = "%s/links" % self.api_endpoint
         headers = {'Accept': 'application/json'}
-        payload = { k:v, 'access_token': self.access_token }
-        r = requests.get(url, headers=headers, params=payload)       
+        payload = {k: v, 'access_token': self.access_token}
+        r = requests.get(url, headers=headers, params=payload)
         if r.status_code != 200:
             self.error = r.text
             return False
@@ -36,7 +37,7 @@ class WebmentionIO():
             return False
         else:
             return links
-        
+
     def linksToAll(self):
         pass
 
@@ -47,8 +48,8 @@ if __name__ == '__main__':
     wio = WebmentionIO(webmention_io_token)
     ret = wio.linksToURL('http://indiewebcamp.com/webmention')
     if not ret:
-        print wio.error
+        print(wio.error)
     else:
         for l in ret['links']:
-            print l['id'], l['source'], l['verified_date']
+            print(l['id'], l['source'], l['verified_date'])
     """

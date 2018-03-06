@@ -54,10 +54,10 @@ Python code to get info about a webpage.
     url = 'a link to a web page'
     i = UrlInfo(url)
     if i.error:
-        print 'There was an error getting %s' % url
+        print('There was an error getting %s' % url)
     else:
-        print 'in-reply-to link: %s' % i.inReplyTo()
-        print 'publication date: %s' % i.pubDate()
-        print 'page title: %s' % i.title()
-        print 'image link: %s' % i.image()
+        print('in-reply-to link: %s' % i.inReplyTo())
+        print('publication date: %s' % i.pubDate())
+        print('page title: %s' % i.title())
+        print('image link: %s' % i.image())
 
