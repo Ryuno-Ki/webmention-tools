@@ -1,5 +1,5 @@
 webmention-tools
-===============
+================
 
 Some simple tools in python to deal with webmentions.
 
@@ -30,8 +30,8 @@ Installation
 
 pip install webmentiontools
 
-Usage: 
-========
+Usage 
+=====
 
 Command line:
 
@@ -61,3 +61,12 @@ Python code to get info about a webpage.
         print('page title: %s' % i.title())
         print('image link: %s' % i.image())
 
+Development
+===========
+
+1. Create a virtualenv with python3
+2. Change into that directory and clone the repository
+3. Activate the virtualenv by `source`ing `bin/activate`
+4. Change into the cloned repository and install dependencies via
+   `pip install -r requirements.txt'
+5. Run `pytest --cov=webmentiontools` for unit tests with code coverage
