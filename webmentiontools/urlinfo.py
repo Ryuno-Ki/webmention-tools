@@ -23,7 +23,7 @@ class UrlInfo():
             return
         # use apparent_encoding, seems to work better in the cases I tested.
         r.encoding = r.apparent_encoding
-        self.soup = BeautifulSoup(r.text)
+        self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def inReplyTo(self):
         if 'in_reply_to' in self.data:
