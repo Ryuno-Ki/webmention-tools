@@ -32,7 +32,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip3 install -r requirements.txt
+            cd ~/repo/venv && pip3 install -r requirements.txt
 
       - save_cache:
           paths:
@@ -48,7 +48,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest --cov=./
+            cd ~/repo/venv && pytest --cov=./
             codecov
 
       - store_artifacts:
