@@ -1,5 +1,6 @@
 webmention-tools
 ================
+[![CircleCI](https://circleci.com/gh/vrypan/webmention-tools.svg?style=svg)](https://circleci.com/gh/vrypan/webmention-tools)
 
 Some simple tools in python to deal with webmentions.
 
