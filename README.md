@@ -20,7 +20,7 @@ There is also the corresponting command line tool,
 webmention-tools (which is also a simple example on how 
 to use the library.
 
-Check bin/demp.py on how to use the library to query 
+Check [bin/demo.py](./bin/demo.py) on how to use the library to query 
 webmention.io and present information for all URLs that
 mentioned http://indiewebcamp.com/webmention
 
