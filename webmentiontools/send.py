@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 class WebmentionSend():
 
     LINK_HEADER_RE = re.compile(
-        r'''<([^>]+)>; rel=["'](http://)?webmention(\.org/?)?["']''')
+        r'''<([^>]+)>; rel=["'](https://)?webmention(\.org/?)?["']''')
 
     def __init__(self, source, target, endpoint=None):
         self.source_url = source
@@ -51,7 +51,7 @@ class WebmentionSend():
                 return
 
         # look in the content
-        soup = BeautifulSoup(self.html)
+        soup = BeautifulSoup(self.html, 'html.parser')
         tag = None
         for name, rel in itertools.product(
             ('link', 'a'), ('webmention', 'https://webmention.org/')
