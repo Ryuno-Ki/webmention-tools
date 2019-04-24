@@ -48,7 +48,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest --cov=./webmentiontools
+            pytest --cov
             codecov
 
       - store_artifacts:

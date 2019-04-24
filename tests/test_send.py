@@ -1,6 +1,6 @@
 import unittest
 
-import responses
+import requests_mock
 from webmentiontools.send import WebmentionSend
 
 mock_source = 'http://example.com'
@@ -26,11 +26,11 @@ class WebmentionSendTestCase(unittest.TestCase):
         self.assertEqual(webmention_send.receiver_endpoint, mock_endpoint)
 
     # The following test need more love, i.e. aren't covering everything
-    @responses.activate
-    def test_send(self):
+    @requests_mock.mock()
+    def test_send(self, m):
         mock_kwargs = {}
-        responses.add(responses.GET, mock_target, json={'error': 'not found'},
-                      status=404)
+        m.get(mock_target, json={'error': 'not found'},
+                      status_code=404)
 
         webmention_send = WebmentionSend(
             mock_source,
@@ -40,13 +40,10 @@ class WebmentionSendTestCase(unittest.TestCase):
         self.assertFalse(result)
 
     # The following test need more love, i.e. aren't covering everything
-    @responses.activate
-    def test_send_with_endpoint(self):
+    @requests_mock.mock()
+    def test_send_with_endpoint(self, m):
         mock_kwargs = {'headers': {'X-Clacks-Overhead': 'GNU Terry Pratchett'}}
-        responses.add(responses.POST,
-                      mock_endpoint,
-                      json={'error': 'not found'},
-                      status=404)
+        m.post(mock_endpoint, json={'error': 'not found'}, status_code=404)
 
         webmention_send = WebmentionSend(
             mock_source,

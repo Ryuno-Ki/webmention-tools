@@ -1,6 +1,6 @@
 import unittest
 
-import responses
+import requests_mock
 from webmentiontools.urlinfo import UrlInfo
 
 mock_url = 'http://example.com'
@@ -8,20 +8,18 @@ mock_url = 'http://example.com'
 
 class UrlInfoTestCase(unittest.TestCase):
 
-    @responses.activate
-    def test_init(self):
-        responses.add(responses.GET, mock_url, json={'error': 'not found'},
-                      status=404)
+    @requests_mock.mock()
+    def test_init(self, m):
+        m.get(mock_url, json={'error': 'not found'}, status_code=404)
         url_info = UrlInfo(mock_url)
         self.assertEqual(url_info.url, mock_url)
         self.assertEqual(url_info.soup, None)
         self.assertEqual(url_info.data, {'links_to': []})
         self.assertTrue(url_info.error)
 
-    @responses.activate
-    def test_fetchHTML(self):
-        responses.add(responses.GET, mock_url, json={'error': 'not found'},
-                      status=404)
+    @requests_mock.mock()
+    def test_fetchHTML(self, m):
+        m.get(mock_url, json={'error': 'not found'}, status_code=404)
         url_info = UrlInfo(mock_url)
         self.assertEqual(url_info.soup, None)
         self.assertEqual(url_info.data, {'links_to': []})
