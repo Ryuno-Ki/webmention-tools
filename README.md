@@ -1,6 +1,10 @@
 webmention-tools
 ================
+
 [![CircleCI](https://circleci.com/gh/Ryuno-Ki/webmention-tools.svg?style=svg)](https://circleci.com/gh/Ryuno-Ki/webmention-tools)
+![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/Ryuno-Ki/webmention-tools.svg?style=popout)
+[![Coverage](https://codecov.io/gh/Ryuno-Ki/webmention-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/Ryuno-Ki/webmention-tools)
+[![Maintainability](https://api.codeclimate.com/v1/badges/bb63f7d3f38456ea8770/maintainability)](https://codeclimate.com/github/Ryuno-Ki/webmention-tools/maintainability)
 
 Some simple tools in python to deal with webmentions.
 
