@@ -1,108 +1,122 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import itertools
-import re
+from urllib.parse import urlparse, urlunparse
+
+from httplink import parse_link_header
 import requests
-from urllib.parse import urljoin
-from bs4 import BeautifulSoup
 
 
-class WebmentionSend():
+class WebmentionSend(object):
+    def __init__(self, from_url, to_url):
+        """
+        This class is responsible for sending Webmentions as standardised in
+        https://www.w3.org/TR/webmention/#sending-webmentions
 
-    LINK_HEADER_RE = re.compile(
-        r'''<([^>]+)>; rel=["'](https://)?webmention(\.org/?)?["']''')
+        :param from_url: The URL from which to send a Webmention.
+        :param to_url: The URL to which to send a Webmention.
+        :type from_url: str
+        :type to_url: str
+        """
+        self.from_url = from_url
+        self.to_url = to_url
 
-    def __init__(self, source, target, endpoint=None):
-        self.source_url = source
-        self.target_url = target
-        self.receiver_endpoint = endpoint
+    def check_has_from_url(self):
+        """
+        Checks, whether the from_url is a valid URL.
 
-    def send(self, **kwargs):
-        self.error = None
-        self.requests_kwargs = kwargs
-        if not self.receiver_endpoint:
-            self._discoverEndpoint()
-        if not self.receiver_endpoint:
+        :returns: Is the from_url valid?
+        :rtype: bool
+        """
+        return self._check_valid_url(self.from_url)
+
+    def check_has_to_url(self):
+        """
+        Checks, whether the to_url is a valid URL.
+
+        :returns: Is the to_url valid?
+        :rtype: bool
+        """
+        return self._check_valid_url(self.to_url)
+
+    def head_url(self):
+        """
+        Makes a HEAD request to to_url and checks for webmention rel in HTTP
+        header.
+
+        :returns: Webmention rel endpoint if found.
+        :rtype: str or None
+        """
+        webmention_link_header = None
+
+        response = requests.head(self.to_url)
+        if self._is_successful_response(response):
+            webmention_link_header = self._get_webmention_link_header(
+                response.headers
+            )
+
+            webmention_link_header = self._ensure_url(webmention_link_header)
+
+        return webmention_link_header
+
+    def _check_valid_url(self, url_string):
+        try:
+            result = urlparse(url_string)
+            return all([result.scheme, result.netloc, result.path])
+        except:
             return False
-        return self._notifyReceiver()
 
-    def _discoverEndpoint(self):
-        r = requests.get(self.target_url, verify=False, **self.requests_kwargs)
-        if r.status_code != 200:
-            self.error = {
-                'code': 'BAD_TARGET_URL',
-                'error_description': 'Unable to get target URL.',
-                'request': 'GET %s' % self.target_url,
-                'http_status': r.status_code,
-            }
-            return
-        self.html = r.text
+    def _is_successful_response(self, response):
+        return str(response.status_code).startswith("2")
 
-        # look in the headers
-        # XXX: it looks like requests doesn't handle multiple headers with the
-        # same name, e.g. 'Link'. from skimming the code, it looks like the last
-        # one wins. ugh. :/
-        for link in r.headers.get('link', '').split(','):
-            match = self.LINK_HEADER_RE.search(link)
-            if match:
-                self.receiver_endpoint = urljoin(self.target_url,
-                                                 match.group(1))
-                return
+    def _get_webmention_link_header(self, headers):
+        link_header = headers.get("link")
+        if link_header is None:
+            return None
 
-        # look in the content
-        soup = BeautifulSoup(self.html, 'html.parser')
-        tag = None
-        for name, rel in itertools.product(
-            ('link', 'a'), ('webmention', 'https://webmention.org/')
-        ):
-            tag = soup.find(name, attrs={'rel': rel})
-            if tag:
+        parsed = parse_link_header(link_header)
+        webmention_link = None
+        for link in parsed.links:
+            if "webmention" in link.rel:
+                webmention_link = link.target
                 break
 
-        if tag and tag.get('href'):
-            # add the base scheme and host to relative endpoints
-            self.receiver_endpoint = urljoin(
-                self.target_url, tag['href']
-            )
+        return webmention_link
+
+    def _ensure_url(self, url_string):
+        parts = []
+
+        parsed = urlparse(url_string)
+        parsed_to_url = urlparse(self.to_url)
+
+        if parsed.scheme == "":
+            parts.append(parsed_to_url.scheme)
         else:
-            self.error = {
-                'code': 'NO_ENDPOINT',
-                'error_description': 'Unable to discover webmention endpoint.'
-            }
+            parts.append(parsed.scheme)
 
-    def _notifyReceiver(self):
-        payload = {'source': self.source_url, 'target': self.target_url}
-        r = requests.post(
-            self.receiver_endpoint,
-            verify=False,
-            data=payload,
-            **self.requests_kwargs
-        )
-
-        request_str = 'POST %s (with source=%s, target=%s)' % (
-            self.receiver_endpoint,
-            self.source_url,
-            self.target_url
-        )
-        if r.status_code / 100 != 2:
-            self.error = {
-                'code': 'RECEIVER_ERROR',
-                'request': request_str,
-                'http_status': r.status_code,
-                }
-            try:
-                self.error.update(r.json())
-            except:
-                self.error['body'] = r.text
-            return False
+        if parsed.netloc == "":
+            parts.append(parsed_to_url.netloc)
         else:
-            self.response = {
-                'request': request_str,
-                'http_status': r.status_code,
-                'body': r.text
-            }
-            return True
+            parts.append(parsed.netloc)
 
-if __name__ == '__main__':
-    pass
+        if parsed.path == "":
+            parts.append(parsed_to_url.path)
+        else:
+            parts.append(parsed.path)
+
+        if parsed.params == "":
+            parts.append(parsed_to_url.params)
+        else:
+            parts.append(parsed.params)
+
+        if parsed.query == "":
+            parts.append(parsed_to_url.query)
+        else:
+            parts.append(parsed.query)
+
+        if parsed.fragment == "":
+            parts.append(parsed_to_url.fragment)
+        else:
+            parts.append(parsed.fragment)
+
+        return urlunparse(tuple(parts))
