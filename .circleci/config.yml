@@ -6,14 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7.3
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
 
@@ -39,19 +32,85 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
+  test:
+    docker:
+      - image: circleci/python:3.7.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
       - run:
-          name: run tests
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+
+      - run:
+          name: run tests with coverage
           command: |
             . venv/bin/activate
-            pytest --cov
+            pytest --cov=webmentiontools
             codecov
 
       - store_artifacts:
           path: test-reports
           destination: test-reports
 
+      - store_test_results:
+          path: test-reports
+
+  test_webtest:
+    docker:
+      - image: circleci/python:3.7.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+
+      - run:
+          name: run tests with mark webtest
+          command: |
+            . venv/bin/activate
+            pytest -m "webtest"
+
+  test_no_webtest:
+    docker:
+      - image: circleci/python:3.7.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+
+      - run:
+          name: run tests without mark webtest
+          command: |
+            . venv/bin/activate
+            pytest -m "not webtest"
+
+workflow:
+  version: 2
+  workflow:
+    jobs:
+      - build
+      - test
+      - test_webtest
+      - test_no_webtest
