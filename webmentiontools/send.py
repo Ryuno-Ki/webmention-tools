@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from bs4 import BeautifulSoup
 from httplink import parse_link_header
 import requests
+
+import webmentiontools
 
 
 class WebmentionSend(object):
@@ -18,9 +20,15 @@ class WebmentionSend(object):
         :param to_url: The URL to which to send a Webmention.
         :type from_url: str
         :type to_url: str
+
+        :todo: Read version of requests instead of hardcode it here.
         """
         self.from_url = from_url
         self.to_url = to_url
+        self.user_agent = "Webmention Tools/{} requests/{}".format(
+            webmentiontools.__version__,
+            "2.21.0"
+        )
 
     def check_has_from_url(self):
         """
@@ -50,13 +58,19 @@ class WebmentionSend(object):
         """
         webmention_link_header = None
 
-        response = requests.head(self.to_url)
+        response = requests.head(
+            self.to_url,
+            allow_redirects=True,
+            headers={"User-Agent": self.user_agent}
+        )
+
         if self._is_successful_response(response):
             webmention_link_header = self._get_webmention_link_header(
                 response.headers
             )
 
-            webmention_link_header = self._ensure_url(webmention_link_header)
+            if webmention_link_header:
+                webmention_link_header = self._ensure_url(webmention_link_header)
 
         return webmention_link_header
 
@@ -69,7 +83,11 @@ class WebmentionSend(object):
         """
         html = None
 
-        response = requests.get(self.to_url)
+        response = requests.get(
+            self.to_url,
+            allow_redirects=True,
+            headers={"User-Agent": self.user_agent}
+        )
         if self._is_successful_response(response):
             if response.headers.get("content-type").startswith("text/html"):
                 html = response.text
@@ -78,6 +96,13 @@ class WebmentionSend(object):
 
     def find_webmention_links(self, html):
         """
+        Searches the HTML for all <link> and <a> tags outside of comments.
+        Filter them for rel="webmention".
+
+        :param html: The HTML to search through.
+        :type html: str
+        :returns: List of URLs which are webmentions.
+        :rtype: list(str)
         """
         soup = BeautifulSoup(html, "html.parser")
         links_and_anchors = soup.find_all(["link", "a"])
@@ -86,14 +111,16 @@ class WebmentionSend(object):
         for link_or_anchor in links_and_anchors:
             if link_or_anchor.attrs.get("rel"):
                 if "webmention" in link_or_anchor.attrs.get("rel"):
-                    webmention_link = self._ensure_url(link_or_anchor.attrs.get("href"))
-                    webmentions.append(webmention_link)
+                    href = link_or_anchor.attrs.get("href")
+                    if href is not None:
+                        webmention_link = self._ensure_url(href)
+                        webmentions.append(webmention_link)
 
         return webmentions
 
     def _check_valid_url(self, url_string):
         try:
-            result = urlparse(url_string)
+            result = urlsplit(url_string)
             return all([result.scheme, result.netloc, result.path])
         except:
             return False
@@ -115,11 +142,11 @@ class WebmentionSend(object):
 
         return webmention_link
 
-    def _ensure_url(self, url_string):
+    def _ensure_url(self, url_string=""):
         parts = []
 
-        parsed = urlparse(url_string)
-        parsed_to_url = urlparse(self.to_url)
+        parsed = urlsplit(url_string)
+        parsed_to_url = urlsplit(self.to_url)
 
         if parsed.scheme == "":
             parts.append(parsed_to_url.scheme)
@@ -134,12 +161,12 @@ class WebmentionSend(object):
         if parsed.path == "":
             parts.append(parsed_to_url.path)
         else:
-            parts.append(parsed.path)
-
-        if parsed.params == "":
-            parts.append(parsed_to_url.params)
-        else:
-            parts.append(parsed.params)
+            path = str(parsed.path)
+            if path.startswith("/"):
+                parts.append(parsed.path)
+            else:
+                joined_path = urljoin(parsed_to_url.path, parsed.path)
+                parts.append(joined_path)
 
         if parsed.query == "":
             parts.append(parsed_to_url.query)
@@ -151,4 +178,4 @@ class WebmentionSend(object):
         else:
             parts.append(parsed.fragment)
 
-        return urlunparse(tuple(parts))
+        return str(urlunsplit(tuple(parts)))
