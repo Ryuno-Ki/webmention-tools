@@ -3,6 +3,7 @@
 
 from urllib.parse import urlparse, urlunparse
 
+from bs4 import BeautifulSoup
 from httplink import parse_link_header
 import requests
 
@@ -58,6 +59,37 @@ class WebmentionSend(object):
             webmention_link_header = self._ensure_url(webmention_link_header)
 
         return webmention_link_header
+
+    def get_url(self):
+        """
+        Makes a GET request to to_url.
+
+        :returns: HTML of endpoint if found.
+        :rytpe: str or None
+        """
+        html = None
+
+        response = requests.get(self.to_url)
+        if self._is_successful_response(response):
+            if response.headers.get("content-type").startswith("text/html"):
+                html = response.text
+
+        return html
+
+    def find_webmention_links(self, html):
+        """
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        links_and_anchors = soup.find_all(["link", "a"])
+
+        webmentions = []
+        for link_or_anchor in links_and_anchors:
+            if link_or_anchor.attrs.get("rel"):
+                if "webmention" in link_or_anchor.attrs.get("rel"):
+                    webmention_link = self._ensure_url(link_or_anchor.attrs.get("href"))
+                    webmentions.append(webmention_link)
+
+        return webmentions
 
     def _check_valid_url(self, url_string):
         try:
