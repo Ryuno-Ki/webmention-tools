@@ -106,9 +106,9 @@ jobs:
             . venv/bin/activate
             pytest -m "not webtest"
 
-workflow:
+workflows:
   version: 2
-  workflow:
+  build-test:
     jobs:
       - build
       - test
