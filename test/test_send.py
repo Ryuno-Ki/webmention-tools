@@ -89,3 +89,19 @@ class WebmentionSendTestCase(unittest.TestCase):
         assert "Webmention" in webmention.user_agent
         assert webmentiontools.__version__ in webmention.user_agent
         assert "requests" in webmention.user_agent
+
+    @pytest.mark.webtest
+    def test_send_notification(self):
+        TARGETS = [
+            "https://webmention.rocks/update/1",
+            "https://webmention.rocks/update/1/part/2"
+        ]
+
+        for target in TARGETS:
+            webmention = WebmentionSend(
+                MOCK_SOURCE,
+                target
+            )
+
+            ok = webmention.send_notification()
+            assert ok is True

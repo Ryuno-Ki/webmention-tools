@@ -118,6 +118,37 @@ class WebmentionSend(object):
 
         return webmentions
 
+    def send_notification(self):
+        """
+        Sends a notification to the target server to trigger a webmention
+        comment.
+
+        :returns: Was notification successful?
+        :rtype: bool
+        """
+        endpoint = self.head_url()
+
+        if endpoint is None:
+            html = self.get_url()
+            links = self.find_webmention_links(html)
+            endpoint = links[0] if len(links) > 0 else None
+
+        if endpoint is None:
+            return False
+
+        payload = {"source": self.from_url, "target": self.to_url}
+        response = requests.post(
+            endpoint,
+            data=payload,
+            allow_redirects=True,
+            headers={"User-Agent": self.user_agent}
+        )
+
+        if int(response.status_code) in (200, 201, 202):
+            return True
+
+        return False
+
     def _check_valid_url(self, url_string):
         try:
             result = urlsplit(url_string)
