@@ -90,6 +90,7 @@ class WebmentionSendTestCase(unittest.TestCase):
         assert webmentiontools.__version__ in webmention.user_agent
         assert "requests" in webmention.user_agent
 
+    @pytest.mark.with_domain
     @pytest.mark.webtest
     def test_send_notification(self):
         TARGETS = [
@@ -105,3 +106,14 @@ class WebmentionSendTestCase(unittest.TestCase):
 
             ok = webmention.send_notification()
             assert ok is True
+
+    @pytest.mark.with_domain
+    @pytest.mark.webtest
+    def test_delete_webmention(self):
+        webmention = WebmentionSend(
+            MOCK_SOURCE,
+            "https://webmention.rocks/delete/1"
+        )
+
+        ok = webmention.delete_webmention()
+        assert ok is True
