@@ -70,7 +70,9 @@ class WebmentionSend(object):
             )
 
             if webmention_link_header:
-                webmention_link_header = self._ensure_url(webmention_link_header)
+                webmention_link_header = self._ensure_url(
+                    webmention_link_header
+                )
 
         return webmention_link_header
 
@@ -149,11 +151,21 @@ class WebmentionSend(object):
 
         return False
 
+    def delete_webmention(self):
+        """
+        Sends a notification to the target server to trigger removal of a
+        webmention comment.
+
+        :returns: Was webmention comment successfully removed?
+        :rtype: bool
+        """
+        return self.send_notification()
+
     def _check_valid_url(self, url_string):
         try:
             result = urlsplit(url_string)
             return all([result.scheme, result.netloc, result.path])
-        except:
+        except Exception:
             return False
 
     def _is_successful_response(self, response):
