@@ -52,7 +52,7 @@ jobs:
           name: run tests with coverage
           command: |
             . venv/bin/activate
-            pytest --cov=webmentiontools
+            pytest --cov=webmentiontools -m "not with_domain"
             codecov
 
       - store_artifacts:
@@ -62,55 +62,9 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  test_webtest:
-    docker:
-      - image: circleci/python:3.7.3
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip3 install -r requirements.txt
-
-      - run:
-          name: run tests with mark webtest
-          command: |
-            . venv/bin/activate
-            pytest -m "webtest"
-
-  test_no_webtest:
-    docker:
-      - image: circleci/python:3.7.3
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip3 install -r requirements.txt
-
-      - run:
-          name: run tests without mark webtest
-          command: |
-            . venv/bin/activate
-            pytest -m "not webtest"
-
 workflows:
   version: 2
   build-test:
     jobs:
       - build
       - test
-      - test_webtest
-      - test_no_webtest
