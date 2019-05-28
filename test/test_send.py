@@ -27,14 +27,14 @@ class WebmentionSendTestCase(unittest.TestCase):
             MOCK_SOURCE,
             MOCK_TARGET
         )
-        assert webmention.check_has_from_url() == True
+        assert webmention.check_has_from_url() is True
 
     def test_check_has_to_url(self):
         webmention = WebmentionSend(
             MOCK_SOURCE,
             MOCK_TARGET
         )
-        assert webmention.check_has_to_url() == True
+        assert webmention.check_has_to_url() is True
 
     # Conform to Webmention Protocol 3.1.2
     # https://www.w3.org/TR/webmention/#sender-discovers-receiver-webmention-endpoint

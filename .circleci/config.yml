@@ -32,6 +32,29 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+  lint:
+    docker:
+      - image: circleci/python:3.7.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+            pip3 install flake8
+
+      - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            flake8 --exclude='.git,__pycache__,.tox,.eggs,*.egg,build'
+ 
   test:
     docker:
       - image: circleci/python:3.7.3
@@ -67,4 +90,5 @@ workflows:
   build-test:
     jobs:
       - build
+      - lint
       - test
