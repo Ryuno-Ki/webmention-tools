@@ -2,10 +2,7 @@ import unittest
 
 import pytest
 
-import webmentiontools
 from webmentiontools.send import WebmentionSend
-
-from .endpoints import WEBMENTION_ROCKS_TESTS
 
 MOCK_SOURCE = 'http://example.com/'
 MOCK_TARGET = 'http://foo.bar/'
