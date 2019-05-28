@@ -4,10 +4,11 @@
 import requests
 
 import webmentiontools
+from webmentiontools.discover import WebmentionDiscover
 
 
 class WebmentionSend(object):
-    def __init__(self, from_url, to_url, discover = None):
+    def __init__(self, from_url, to_url, discover=None):
         self.user_agent = "Webmention Tools/{} requests/{}".format(
             webmentiontools.__version__,
             "2.21.0"
