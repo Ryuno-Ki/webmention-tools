@@ -53,7 +53,8 @@ jobs:
           name: run lint
           command: |
             . venv/bin/activate
-            flake8 --exclude='.git,__pycache__,.tox,.eggs,*.egg,build'
+            flake8 webmentiontools
+            flake8 test
  
   test:
     docker:
