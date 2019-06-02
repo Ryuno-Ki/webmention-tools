@@ -5,7 +5,6 @@ import pytest
 from webmentiontools.send import WebmentionSend
 
 MOCK_SOURCE = 'http://example.com/'
-MOCK_TARGET = 'http://foo.bar/'
 
 
 class WebmentionSendTestCase(unittest.TestCase):

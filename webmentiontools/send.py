@@ -11,7 +11,7 @@ class WebmentionSend(object):
     def __init__(self, from_url, to_url, discover=None):
         self.user_agent = "Webmention Tools/{} requests/{}".format(
             webmentiontools.__version__,
-            "2.21.0"
+            requests.__version__
         )
         self.from_url = from_url
         self.to_url = to_url
@@ -47,7 +47,10 @@ class WebmentionSend(object):
             headers={"User-Agent": self.user_agent}
         )
 
-        if int(response.status_code) in (200, 201, 202):
+        VALID_STATUS_CODES = (201, 202)
+        ACCEPTED_STATUS_CODES = (200, )
+        STATUS_CODES = VALID_STATUS_CODES + ACCEPTED_STATUS_CODES
+        if int(response.status_code) in STATUS_CODES:
             return True
 
         return False
