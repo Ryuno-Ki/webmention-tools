@@ -2,7 +2,7 @@ beautifulsoup4==4.7.1
 codecov==2.0.15
 coverage==4.5.3
 httplink==0.1.0
-pytest==4.5.0
+pytest==4.6.3
 pytest-cov==2.7.1
 requests==2.21.0
 requests-mock==1.6.0
