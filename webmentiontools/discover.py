@@ -2,15 +2,11 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlsplit
 
-import requests
-
-import webmentiontools
 from webmentiontools.parser import parse_headers, parse_html
 from webmentiontools.request import (
     is_successful_response,
     request_get_url,
-    request_head_url,
-    user_agent
+    request_head_url
 )
 
 

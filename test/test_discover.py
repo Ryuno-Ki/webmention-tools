@@ -1,9 +1,7 @@
 import unittest
-from unittest.mock import patch
 
 import pytest
 
-import webmentiontools
 from webmentiontools.discover import WebmentionDiscover
 
 from .endpoints import WEBMENTION_ROCKS_TESTS

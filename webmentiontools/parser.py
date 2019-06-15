@@ -29,6 +29,7 @@ def parse_headers(target_url, headers):
 
     return webmention_link
 
+
 def parse_html(target_url, html):
     """
     Searches the markup for a valid webmention endpoint.
@@ -57,6 +58,7 @@ def parse_html(target_url, html):
 
     return webmentions[0]
 
+
 def _make_case_insensitive(case_sensitive_dict):
     result = {}
     for item in case_sensitive_dict.items():
@@ -64,6 +66,7 @@ def _make_case_insensitive(case_sensitive_dict):
         value = item[1]
         result[key] = value
     return result
+
 
 def _ensure_url(target_url, url_string=""):
     parts = []

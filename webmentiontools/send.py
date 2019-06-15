@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import requests
-
-import webmentiontools
 from webmentiontools.discover import WebmentionDiscover
 from webmentiontools.request import request_post_url
 

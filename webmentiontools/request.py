@@ -8,6 +8,7 @@ user_agent = "Webmention Tools/{} requests/{}".format(
     requests.__version__
 )
 
+
 def is_successful_response(response):
     """
     Checks status code of response for success.
@@ -18,8 +19,10 @@ def is_successful_response(response):
     :rtype: bool
     """
     accepted_status_code = str(response.status_code).startswith("2")
-    accepted_content_type = response.headers.get("content-type").startswith("text/html")
+    content_type = response.headers.get("content-type")
+    accepted_content_type = content_type.startswith("text/html")
     return accepted_status_code and accepted_content_type
+
 
 def request_head_url(url):
     """
@@ -36,6 +39,7 @@ def request_head_url(url):
         headers={"User-Agent": user_agent}
     )
 
+
 def request_get_url(url):
     """
     Makes a GET request against the url.
@@ -50,6 +54,7 @@ def request_get_url(url):
         allow_redirects=True,
         headers={"User-Agent": user_agent}
     )
+
 
 def request_post_url(endpoint, source_url, target_url):
     """

@@ -1,3 +1,4 @@
+# flake8: noqa
 WEBMENTION_ROCKS_TESTS = [{
     "url": "https://webmention.rocks/test/1",
     "source": "header",
