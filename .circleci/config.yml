@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.8.0b1
 
     working_directory: ~/repo
 
@@ -34,7 +34,7 @@ jobs:
 
   lint:
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.8.0b1
 
     working_directory: ~/repo
 
@@ -58,7 +58,7 @@ jobs:
  
   test:
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.8.0b1
 
     working_directory: ~/repo
 
