@@ -77,7 +77,7 @@ Development
 3. Activate the virtualenv by ``source``\ ing ``bin/activate``
 4. Change into the cloned repository and install dependencies via \`pip
    install -r requirements.txt'
-5. Run ``pytest --cov`` for unit tests with code coverage
+5. Run ``pytest --cov=webmentiontools`` for unit tests with code coverage
 
 .. |CircleCI| image:: https://circleci.com/gh/Ryuno-Ki/webmention-tools.svg?style=svg
    :target: https://circleci.com/gh/Ryuno-Ki/webmention-tools

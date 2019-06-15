@@ -37,9 +37,9 @@ class WebmentionIOTestCase(unittest.TestCase):
         links = webmention_io.linksToDomain(mock_domain)
         self.assertEqual(links, False)
 
-    def test_linksToAll(self):
-        webmention_io = WebmentionIO()
-        self.assertEqual(True, True)
+    # def test_linksToAll(self):
+    #     webmention_io = WebmentionIO()
+    #     self.assertEqual(True, True)
 
 
 if __name__ == '__main__':

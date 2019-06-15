@@ -1,58 +1,37 @@
 import unittest
 
-import requests_mock
+import pytest
+
 from webmentiontools.send import WebmentionSend
 
-mock_source = 'http://example.com'
-mock_target = 'http://foo.bar'
-mock_endpoint = 'http://webmention/endpoint'
+MOCK_SOURCE = 'http://example.com/'
 
 
 class WebmentionSendTestCase(unittest.TestCase):
-    def test_init(self):
-        webmention_send = WebmentionSend(mock_source, mock_target)
-        self.assertEqual(webmention_send.source_url, mock_source)
-        self.assertEqual(webmention_send.target_url, mock_target)
-        self.assertEqual(webmention_send.receiver_endpoint, None)
+    @pytest.mark.with_domain
+    @pytest.mark.integration
+    def test_send_notification(self):
+        TARGETS = [
+            "https://webmention.rocks/update/1",
+            "https://webmention.rocks/update/1/part/2"
+        ]
 
-    def test_init_with_endpoint(self):
-        webmention_send = WebmentionSend(
-            mock_source,
-            mock_target,
-            mock_endpoint
+        for target in TARGETS:
+            webmention = WebmentionSend(
+                MOCK_SOURCE,
+                target
+            )
+
+            ok = webmention.send_notification()
+            assert ok is True
+
+    @pytest.mark.with_domain
+    @pytest.mark.integration
+    def test_delete_webmention(self):
+        webmention = WebmentionSend(
+            MOCK_SOURCE,
+            "https://webmention.rocks/delete/1"
         )
-        self.assertEqual(webmention_send.source_url, mock_source)
-        self.assertEqual(webmention_send.target_url, mock_target)
-        self.assertEqual(webmention_send.receiver_endpoint, mock_endpoint)
 
-    # The following test need more love, i.e. aren't covering everything
-    @requests_mock.mock()
-    def test_send(self, m):
-        mock_kwargs = {}
-        m.get(mock_target, json={'error': 'not found'},
-                      status_code=404)
-
-        webmention_send = WebmentionSend(
-            mock_source,
-            mock_target
-        )
-        result = webmention_send.send(**mock_kwargs)
-        self.assertFalse(result)
-
-    # The following test need more love, i.e. aren't covering everything
-    @requests_mock.mock()
-    def test_send_with_endpoint(self, m):
-        mock_kwargs = {'headers': {'X-Clacks-Overhead': 'GNU Terry Pratchett'}}
-        m.post(mock_endpoint, json={'error': 'not found'}, status_code=404)
-
-        webmention_send = WebmentionSend(
-            mock_source,
-            mock_target,
-            mock_endpoint
-        )
-        result = webmention_send.send(**mock_kwargs)
-        self.assertFalse(result)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        ok = webmention.delete_webmention()
+        assert ok is True
