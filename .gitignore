@@ -54,3 +54,4 @@ tags
 # Vim Rope
 .ropeproject
 .pytest_cache
+htmlcov

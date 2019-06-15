@@ -5,41 +5,25 @@ from urllib.parse import urlsplit
 import requests
 
 import webmentiontools
-from .html_body_parser import HtmlBodyParser
-from .http_header_parser import HttpHeaderParser
+from webmentiontools.parser import parse_headers, parse_html
+from webmentiontools.request import (
+    is_successful_response,
+    request_get_url,
+    request_head_url,
+    user_agent
+)
 
 
 class WebmentionDiscover(object):
-    def __init__(self,
-                 url,
-                 html_body_parser=None,
-                 http_header_parser=None):
+    def __init__(self, url):
         """
         This class is responsible for sending Webmentions as standardised in
         https://www.w3.org/TR/webmention/#sending-webmentions
 
         :param url: The URL to which to send a Webmention.
-        :param html_body_parser: A class implementing HtmlBodyParser interface.
-        :param http_header_parser: A class implementing HttpHeaderParser
-        interface.
         :type url: str
         """
         self.url = url
-
-        if html_body_parser is not None:
-            self.html_body_parser = html_body_parser(url)
-        else:
-            self.html_body_parser = HtmlBodyParser(url)
-
-        if http_header_parser is not None:
-            self.http_header_parser = http_header_parser(url)
-        else:
-            self.http_header_parser = HttpHeaderParser(url)
-
-        self.user_agent = "Webmention Tools/{} requests/{}".format(
-            webmentiontools.__version__,
-            requests.__version__
-        )
 
     def check_has_url(self):
         """
@@ -50,7 +34,24 @@ class WebmentionDiscover(object):
         """
         return self._check_valid_url(self.url)
 
-    def head_url(self):
+    def discover(self):
+        """
+        Discovers the endpoint.
+
+        :returns: Webmention endpoint if found.
+        :rtype: str or None
+        """
+        webmention_in_headers = self._head_url()
+        if webmention_in_headers is not None:
+            return webmention_in_headers
+
+        webmention_in_html = self._get_url()
+        if webmention_in_html is not None:
+            return webmention_in_html
+
+        return None
+
+    def _head_url(self):
         """
         Makes a HEAD request to url and checks for webmention rel in HTTP
         header.
@@ -58,46 +59,29 @@ class WebmentionDiscover(object):
         :returns: Webmention rel endpoint if found.
         :rtype: str or None
         """
-        return self.http_header_parser.parse()
+        webmention = None
+        response = request_head_url(self.url)
+        if is_successful_response(response):
+            headers = dict(response.headers)
+            webmention = parse_headers(self.url, headers)
 
-    def get_url(self):
+        return webmention
+
+    def _get_url(self):
         """
-        Makes a GET request to url.
+        Makes a GET request to url and checks for webmention in HTML.
 
-        :returns: HTML of endpoint if found.
+        :returns: Webmention rel endpoint if found.
         :rytpe: str or None
         """
-        html = None
+        webmention = None
+        response = request_get_url(self.url)
+        if is_successful_response(response):
+            html = response.text
+            webmention = parse_html(self.url, html)
 
-        response = requests.get(
-            self.url,
-            allow_redirects=True,
-            headers={"User-Agent": self.user_agent}
-        )
-        if self._is_successful_response(response):
-            if response.headers.get("content-type").startswith("text/html"):
-                html = response.text
-
-        return html
-
-    def find_webmention_links(self, html):
-        """
-        Searches the HTML for all <link> and <a> tags outside of comments.
-        Filter them for rel="webmention".
-
-        :param html: The HTML to search through.
-        :type html: str
-        :returns: List of URLs which are webmentions.
-        :rtype: list(str)
-        """
-        return self.html_body_parser.parse(html)
+        return webmention
 
     def _check_valid_url(self, url_string):
-        try:
-            result = urlsplit(url_string)
-            return all([result.scheme, result.netloc, result.path])
-        except Exception:
-            return False
-
-    def _is_successful_response(self, response):
-        return str(response.status_code).startswith("2")
+        result = urlsplit(url_string)
+        return all([result.scheme, result.netloc, result.path])

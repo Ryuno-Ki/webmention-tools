@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 import pytest
 
@@ -25,51 +26,33 @@ class WebmentionDiscoverTestCase(unittest.TestCase):
         )
         assert webmention.check_has_url() is True
 
+    def test_check_has_url_invalid(self):
+        invalid_url = "does.not.exist"
+        webmention = WebmentionDiscover(
+            invalid_url
+        )
+        assert webmention.check_has_url() is False
+
     # Conform to Webmention Protocol 3.1.2
     # https://www.w3.org/TR/webmention/#sender-discovers-receiver-webmention-endpoint
-    @pytest.mark.webtest
-    def test_head_final_target_url(self):
-        for webmention_rock in WEBMENTION_ROCKS_TESTS:
-            webmention = WebmentionDiscover(
-                webmention_rock["test"]
-            )
-            endpoint = webmention.head_url()
-            if not endpoint:
-                continue
+    @pytest.mark.integration
+    def test_discover(self):
+        for test in WEBMENTION_ROCKS_TESTS:
+            webmention = WebmentionDiscover(test["url"])
+            endpoint = webmention.discover()
+            assert endpoint == test["endpoint"]
 
-            assert endpoint == webmention_rock["endpoint"]
-
-    @pytest.mark.webtest
-    def test_get_final_target_url(self):
-        MOCK_URL = "https://webmention.rocks/test/23/page"
-        webmention = WebmentionDiscover(
-            MOCK_URL
-        )
-
-        endpoint = webmention.head_url()
+        url = "https://webmention.rocks/test/23/page"
+        webmention = WebmentionDiscover(url)
+        endpoint = webmention.discover()
 
         # This assertion is meh, because the URLs contain a changing element
         # Thus I can't just compare against a fixed string
         assert "webmention-endpoint" in endpoint
 
-    @pytest.mark.webtest
-    def test_parse_links_in_html(self):
-        for webmention_rock in WEBMENTION_ROCKS_TESTS:
-            webmention = WebmentionDiscover(
-                webmention_rock["test"]
-            )
-            endpoint = webmention.head_url()
-            if endpoint:
-                continue
-
-            html = webmention.get_url()
-            endpoint = webmention.find_webmention_links(html)
-            assert endpoint == webmention_rock["endpoint"]
-
-    def test_set_user_agent(self):
-        webmention = WebmentionDiscover(
-            MOCK_URL
-        )
-        assert "Webmention" in webmention.user_agent
-        assert webmentiontools.__version__ in webmention.user_agent
-        assert "requests" in webmention.user_agent
+    @pytest.mark.integration
+    def test_discover_no_endpoint(self):
+        url = "http://example.com"
+        webmention = WebmentionDiscover(url)
+        endpoint = webmention.discover()
+        assert endpoint is None

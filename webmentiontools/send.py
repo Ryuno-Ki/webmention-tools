@@ -5,21 +5,14 @@ import requests
 
 import webmentiontools
 from webmentiontools.discover import WebmentionDiscover
+from webmentiontools.request import request_post_url
 
 
 class WebmentionSend(object):
-    def __init__(self, from_url, to_url, discover=None):
-        self.user_agent = "Webmention Tools/{} requests/{}".format(
-            webmentiontools.__version__,
-            requests.__version__
-        )
+    def __init__(self, from_url, to_url):
         self.from_url = from_url
         self.to_url = to_url
-
-        if discover is None:
-            self.discover = WebmentionDiscover(from_url, to_url)
-        else:
-            self.discover = discover(from_url, to_url)
+        self.discover = WebmentionDiscover(to_url)
 
     def send_notification(self):
         """
@@ -29,27 +22,16 @@ class WebmentionSend(object):
         :returns: Was notification successful?
         :rtype: bool
         """
-        endpoint = self.discover.head_url()
-
-        if endpoint is None:
-            html = self.discover.get_url()
-            links = self.discover.find_webmention_links(html)
-            endpoint = links[0] if len(links) > 0 else None
+        endpoint = self.discover.discover()
 
         if endpoint is None:
             return False
 
-        payload = {"source": self.from_url, "target": self.to_url}
-        response = requests.post(
-            endpoint,
-            data=payload,
-            allow_redirects=True,
-            headers={"User-Agent": self.user_agent}
-        )
-
         VALID_STATUS_CODES = (201, 202)
         ACCEPTED_STATUS_CODES = (200, )
         STATUS_CODES = VALID_STATUS_CODES + ACCEPTED_STATUS_CODES
+
+        response = request_post_url(endpoint, self.from_url, self.to_url)
         if int(response.status_code) in STATUS_CODES:
             return True
 

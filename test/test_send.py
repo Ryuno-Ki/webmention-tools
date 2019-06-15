@@ -9,7 +9,7 @@ MOCK_SOURCE = 'http://example.com/'
 
 class WebmentionSendTestCase(unittest.TestCase):
     @pytest.mark.with_domain
-    @pytest.mark.webtest
+    @pytest.mark.integration
     def test_send_notification(self):
         TARGETS = [
             "https://webmention.rocks/update/1",
@@ -26,7 +26,7 @@ class WebmentionSendTestCase(unittest.TestCase):
             assert ok is True
 
     @pytest.mark.with_domain
-    @pytest.mark.webtest
+    @pytest.mark.integration
     def test_delete_webmention(self):
         webmention = WebmentionSend(
             MOCK_SOURCE,
