@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+import requests
+try:
+    from urllib.parse import urljoin
+except ImportError:  # Python2.7
+    from urlparse import urljoin
 
 
 class UrlInfo():

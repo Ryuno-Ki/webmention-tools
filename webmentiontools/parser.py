@@ -1,6 +1,13 @@
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from sys import version_info
+try:
+    from urllib.parse import urljoin, urlsplit, urlunsplit
+except ImportError:  # Python2.7
+    from urlparse import urljoin, urlsplit, urlunsplit
 
-from httplink import parse_link_header
+if version_info[0] == 2:
+    from .vendor.httplink import parse_link_header
+else:  # Python 3
+    from httplink import parse_link_header
 from bs4 import BeautifulSoup
 
 

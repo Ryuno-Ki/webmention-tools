@@ -1,7 +1,9 @@
+# See also https://stackoverflow.com/a/33451105
+# and https://www.python.org/dev/peps/pep-0508/#environment-markers
 beautifulsoup4==4.7.1
 codecov==2.0.15
 coverage==4.5.3
-httplink==0.1.0
+httplink==0.1.0;python_version>='3'
 pytest==4.6.3
 pytest-cov==2.7.1
 requests==2.22.0
