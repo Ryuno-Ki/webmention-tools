@@ -41,8 +41,9 @@ class Link:
         self.target = target
         self.attributes = attributes
 
-        # Populate _attributes. Need to keep a temporary second dict (extended) with values
-        # whose key ends in '*'. Those need to override the values with normal keys.
+        # Populate _attributes. Need to keep a temporary second dict (extended)
+        # with values whose key ends in '*'. Those need to override the values
+        # with normal keys.
         self._attributes = {}
         extended = {}
         for key, value in self.attributes:
@@ -75,7 +76,7 @@ class Link:
             ' ' +
             str(sorted(self.rel)) +
             ' ' +
-            ' '.join('{!r}={!r}'.format(key, val) for key, val in sorted(self._attributes.items()) if key != 'rel') +
+            ' '.join('{!r}={!r}'.format(key, val) for key, val in sorted(self._attributes.items()) if key != 'rel') +  # noqa: E501
             '>'
         )
 
@@ -104,7 +105,7 @@ class ParsedLinks:
     def __repr__(self):
         return (
             '<ParsedLinks: ' +
-            ', '.join('{}: {}'.format(rel, link) for rel, link in sorted(self._relations.items())) +
+            ', '.join('{}: {}'.format(rel, link) for rel, link in sorted(self._relations.items())) +  # noqa: E501
             '>'
         )
 
@@ -120,7 +121,8 @@ def parse_link_header(link):
     # on first run, don't require a comma delimiter
     matcher = RE_LINK_VALUE
     while link:
-        # match leading <URI-Reference> and remove the matched string from `link`
+        # match leading <URI-Reference> and remove the matched string from
+        # `link`
 
         uri_match = matcher.match(link)
         if not uri_match:
@@ -134,7 +136,8 @@ def parse_link_header(link):
 
         attributes = []
         while True:
-            # match leading ;link-param and remove the matched string from `link`
+            # match leading ;link-param and remove the matched string from
+            # `link`
             param_match = RE_LINK_PARAM.match(link)
             if not param_match:
                 break
@@ -160,39 +163,39 @@ def parse_link_header(link):
 # rfc8288 link_value (with optional leading ",")
 RE_LINK_VALUE = re.compile(r'''
     ^
-    [\s,]*                                          # Skip empty elements (rfc7230#7).
+    [\s,]*                             # Skip empty elements (rfc7230#7).
     <
-    ([^>]*)                                         # URI-Reference; contains no ">" according to grammar.
+    ([^>]*)                            # URI-Reference; contains no ">" according to grammar.  # noqa: E501
     >
 ''', re.X)
 
 # rfc8288 link_value (with mandatory leading ",")
 RE_LINK_VALUE_COMMA = re.compile(r'''
     ^
-    \s*,[\s,]*                                      # Skip empty elements; require at least one delimiter (rfc7230#7).
+    \s*,[\s,]*                         # Skip empty elements; require at least one delimiter (rfc7230#7).  # noqa: E501
     <
-    ([^>]*)                                         # URI-Reference; contains no ">" according to grammar.
+    ([^>]*)                            # URI-Reference; contains no ">" according to grammar.  # noqa: E501
     >
 ''', re.X)
 
 # rfc8288 link-param (including ";" from link_value)
 RE_LINK_PARAM = re.compile(r'''
     ^
-    \s*                                             # OWS
-    ;                                               # ";"
-    \s*                                             # OWS
-    ([-0-9A-Za-z!#$%&'*+-.^_`|~]+)                  # token
-    \s*                                             # BWS
-    =                                               # "="
-    \s*                                             # BWS
+    \s*                                # OWS
+    ;                                  # ";"
+    \s*                                # OWS
+    ([-0-9A-Za-z!#$%&'*+-.^_`|~]+)     # token
+    \s*                                # BWS
+    =                                  # "="
+    \s*                                # BWS
     (?:
-        ([-0-9A-Za-z!#$%&'*+.^_`|~]+)               # token
+        ([-0-9A-Za-z!#$%&'*+.^_`|~]+)  # token
         |
-        "(                                          # quoted-string
+        "(                             # quoted-string
             (?:
-                [\t !#-[\]-~]                       # qdtext
+                [\t !#-[\]-~]          # qdtext
                 |
-                \\[\t -~\x80-\xff]                  # quoted-pair
+                \\[\t -~\x80-\xff]     # quoted-pair
             )*
         )"
     )
@@ -201,14 +204,14 @@ RE_LINK_PARAM = re.compile(r'''
 # rfc8187 ext_value
 RE_EXT_VALUE = re.compile(r'''
     ^
-    ([-0-9A-Za-z!#$%&+^_`{}~]+)                     # charset
+    ([-0-9A-Za-z!#$%&+^_`{}~]+)        # charset
     '
-    ([-0-9A-Za-z]+)                                 # language
+    ([-0-9A-Za-z]+)                    # language
     '
-    ((?:                                            # value-chars
-        %[0-9a-fA-F]{2}                             # pct-encoded
+    ((?:                               # value-chars
+        %[0-9a-fA-F]{2}                # pct-encoded
         |
-        [-0-9A-Za-z!#$&+.^_`|~]                     # attr-char
+        [-0-9A-Za-z!#$&+.^_`|~]        # attr-char
     )*)
     $
 ''', re.X)
@@ -243,4 +246,3 @@ def unescape(escaped_string):
 
     result.seek(0)
     return result.read()
-

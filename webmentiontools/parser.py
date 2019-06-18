@@ -4,11 +4,11 @@ try:
 except ImportError:  # Python2.7
     from urlparse import urljoin, urlsplit, urlunsplit
 
+from bs4 import BeautifulSoup
 if version_info[0] == 2:
     from .vendor.httplink import parse_link_header
 else:  # Python 3
     from httplink import parse_link_header
-from bs4 import BeautifulSoup
 
 
 def parse_headers(target_url, headers):
