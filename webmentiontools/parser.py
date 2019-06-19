@@ -5,10 +5,10 @@ except ImportError:  # Python2.7
     from urlparse import urljoin, urlsplit, urlunsplit
 
 from bs4 import BeautifulSoup
-if version_info[0] == 2:
-    from .vendor.httplink import parse_link_header
-else:  # Python 3
+try:
     from httplink import parse_link_header
+except (ImportError, SyntaxError):  # Python 2.7
+    from httplink.backport import parse_link_header
 
 
 def parse_headers(target_url, headers):

@@ -86,7 +86,7 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  build27:
+  smoke_test27:
     docker:
       - image: circleci/python:2.7
 
@@ -108,6 +108,7 @@ jobs:
             virtualenv venv --python=python2.7
             . venv/bin/activate
             pip install -r requirements.txt
+            pytest --cov=webmentiontools -m "not with_domain"
 
       - save_cache:
           paths:
@@ -121,4 +122,4 @@ workflows:
       - build
       - lint
       - test
-      - build27
+      - smoke_test27
