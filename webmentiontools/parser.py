@@ -1,4 +1,3 @@
-from sys import version_info
 try:
     from urllib.parse import urljoin, urlsplit, urlunsplit
 except ImportError:  # Python2.7
