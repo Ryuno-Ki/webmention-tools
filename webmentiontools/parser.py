@@ -1,7 +1,13 @@
-from urllib.parse import urljoin, urlsplit, urlunsplit
+try:
+    from urllib.parse import urljoin, urlsplit, urlunsplit
+except ImportError:  # Python2.7
+    from urlparse import urljoin, urlsplit, urlunsplit
 
-from httplink import parse_link_header
 from bs4 import BeautifulSoup
+try:
+    from httplink import parse_link_header
+except (ImportError, SyntaxError):  # Python 2.7
+    from httplink.backport import parse_link_header
 
 
 def parse_headers(target_url, headers):

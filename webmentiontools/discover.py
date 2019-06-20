@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from urllib.parse import urlsplit
+try:
+    from urllib.parse import urlsplit
+except ImportError:  # Python2.7
+    from urlparse import urlsplit
 
 from webmentiontools.parser import parse_headers, parse_html
 from webmentiontools.request import (
