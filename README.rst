@@ -1,7 +1,7 @@
 webmention-tools
 ================
 
-|CircleCI| |Vulnerabilities| |Coverage| |Maintainability|
+|CircleCI| |Vulnerabilities| |Coverage| |Maintainability| |ReadTheDocs|
 
 Some simple tools in python to deal with webmentions.
 
@@ -86,3 +86,6 @@ Development
    :target: https://codecov.io/gh/Ryuno-Ki/webmention-tools
 .. |Maintainability| image:: https://api.codeclimate.com/v1/badges/bb63f7d3f38456ea8770/maintainability
    :target: https://codeclimate.com/github/Ryuno-Ki/webmention-tools/maintainability
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/webmention-tools/badge/?version=latest
+   :target: https://webmention-tools.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
