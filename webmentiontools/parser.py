@@ -12,7 +12,7 @@ except (ImportError, SyntaxError):  # Python 2.7
 
 def parse_headers(target_url, headers):
     """
-    Searches the headers for a valid webmention endpoint.
+    Searches the headers for a valid Webmention endpoint.
 
     :param target_url: The URL from which the headers are passed.
     :param headers: The headers to search through.
@@ -38,7 +38,7 @@ def parse_headers(target_url, headers):
 
 def parse_html(target_url, html):
     """
-    Searches the markup for a valid webmention endpoint.
+    Searches the markup for a valid Webmention endpoint.
 
     :param target_url: The URL from which the HTML is passed.
     :param html: The HTML to search through.

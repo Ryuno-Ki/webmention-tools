@@ -52,7 +52,7 @@ class WebmentionDiscover(object):
 
     def _head_url(self):
         """
-        Makes a HEAD request to url and checks for webmention rel in HTTP
+        Makes a HEAD request to url and checks for Webmention rel in HTTP
         header.
 
         :returns: Webmention rel endpoint if found.
@@ -68,7 +68,7 @@ class WebmentionDiscover(object):
 
     def _get_url(self):
         """
-        Makes a GET request to url and checks for webmention in HTML.
+        Makes a GET request to url and checks for Webmention in HTML.
 
         :returns: Webmention rel endpoint if found.
         :rytpe: str or None

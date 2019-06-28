@@ -13,7 +13,7 @@ class WebmentionSend(object):
 
     def send_notification(self):
         """
-        Sends a notification to the target server to trigger a webmention
+        Sends a notification to the target server to trigger a Webmention
         comment.
 
         :returns: Was notification successful?
@@ -37,9 +37,9 @@ class WebmentionSend(object):
     def delete_webmention(self):
         """
         Sends a notification to the target server to trigger removal of a
-        webmention comment.
+        Webmention comment.
 
-        :returns: Was webmention comment successfully removed?
+        :returns: Was Webmention comment successfully removed?
         :rtype: bool
         """
         return self.send_notification()
