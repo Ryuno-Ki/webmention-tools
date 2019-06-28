@@ -74,7 +74,8 @@ def request_post_url(endpoint, source_url, target_url):
         endpoint,
         data=payload,
         allow_redirects=True,
-        # type/* should be fine according to https://tools.ietf.org/html/rfc7231#section-5.3.2
+        # type/* should be fine according to
+        # https://tools.ietf.org/html/rfc7231#section-5.3.2
         # c.f. https://github.com/Ryuno-Ki/webmention-tools/issues/31
         headers={
             "Accept": "text/*, application/*",
