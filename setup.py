@@ -19,6 +19,10 @@ setup(
     platforms=["Linux", ],
     keywords=["webmention"],
     include_package_data=True,
+    project_urls={
+      "Code": "https://github.com/Ryuno-Ki/webmention-tools",
+      "Issue tracker": "https://github.com/Ryuno-Ki/webmention-tools/issues"
+    },
     classifiers=[
         "Development Status :: 1 - Planning",
         "Environment :: Console",
