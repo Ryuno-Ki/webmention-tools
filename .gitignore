@@ -53,5 +53,9 @@ tags
 
 # Vim Rope
 .ropeproject
+# Pytest
 .pytest_cache
+# Coverage
 htmlcov
+# Sphinx
+_build
