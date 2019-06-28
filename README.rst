@@ -28,12 +28,12 @@ webmention.io and present information for all URLs that mentioned
 http://indiewebcamp.com/webmention
 
 Installation
-============
+------------
 
 pip install webmention-tools
 
 Usage
-=====
+-----
 
 Command line:
 
@@ -70,7 +70,7 @@ Python code to get info about a webpage.
         print('image link: %s' % i.image())
 
 Development
-===========
+-----------
 
 1. Create a virtualenv with python3
 2. Change into that directory and clone the repository
