@@ -61,7 +61,7 @@ def request_post_url(endpoint, source_url, target_url):
     Makes a POST request against the endpoint.
 
     :param endpoint: The URL to send request to.
-    :param source_url: URL of page containing a webmention.
+    :param source_url: URL of page containing a Webmention.
     :param target_url: URL of reference in source_url
     :type endpoint: str
     :type source_url: str

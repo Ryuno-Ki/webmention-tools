@@ -3,7 +3,7 @@ webmention-tools
 
 |CircleCI| |Vulnerabilities| |Coverage| |Maintainability| |ReadTheDocs|
 
-Some simple tools in python to deal with webmentions.
+Some simple tools in python to deal with Webmentions.
 
 Note, that this package was formerly known as
 `webmentiontools <https://pypi.org/project/webmentiontools/>`__, but had
@@ -14,11 +14,11 @@ classified as abandoned project, because the author was reachable).
 Currently:
 
 -  webmentiontools.send implements WebmentionSend that sends
-   webmentions.
+   Webmentions.
 -  webmentiontools.urlinfo implements UrlInfo() that will rerurn usefull
    information about a web page, like title, the existance of an
    "in-reply-to" link, the author name, the author image, etc.
--  webmentiontoold.webmentionio provides a class to query webmention.io
+-  webmentiontools.webmentionio provides a class to query webmention.io
 
 There is also the corresponting command line tool, webmention-tools
 (which is also a simple example on how to use the library.
@@ -44,13 +44,13 @@ Command line:
 
 or
 
-Python code to send a webmention:
+Python code to send a Webmention:
 
 ::
 
     from webmentiontools.send import WebmentionSend
-    source = 'URL of page sending the webmention'
-    target = 'URL of page to receive the webmention'
+    source = 'URL of page sending the Webmention'
+    target = 'URL of page to receive the Webmention'
     mention = WebmentionSend(source, target)
     mention.send()
 
