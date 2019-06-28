@@ -78,6 +78,7 @@ def request_post_url(endpoint, source_url, target_url):
         # c.f. https://github.com/Ryuno-Ki/webmention-tools/issues/31
         headers={
             "Accept": "text/*, application/*",
+            "Content-Type": "application/x-www-form-urlencoded",
             "User-Agent": user_agent
         }
     )
