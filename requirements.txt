@@ -5,7 +5,8 @@ codecov==2.0.15
 coverage==4.5.4
 httplink==0.1.0;python_version>='3'
 git+git://github.com/Ryuno-Ki/httplink@1c6672162d092e584867cf20c299bf707e4405b0#egg=httplink ;python_version<='2.7'
-pytest==5.2.0
+pytest==5.2.0;python_version>='3'
+pytest==4.6.5;python_versiony='2.7'
 pytest-cov==2.7.1
 requests==2.22.0
 requests-mock==1.7.0
