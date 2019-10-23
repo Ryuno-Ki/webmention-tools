@@ -8,4 +8,4 @@ git+git://github.com/Ryuno-Ki/httplink@1c6672162d092e584867cf20c299bf707e4405b0#
 pytest==4.6.3
 pytest-cov==2.7.1
 requests==2.22.0
-requests-mock==1.6.0
+requests-mock==1.7.0
