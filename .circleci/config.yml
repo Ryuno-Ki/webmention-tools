@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8.0b1
+      - image: circleci/python:3.8.0
 
     working_directory: ~/repo
 
@@ -34,7 +34,7 @@ jobs:
 
   lint:
     docker:
-      - image: circleci/python:3.8.0b1
+      - image: circleci/python:3.8.0
 
     working_directory: ~/repo
 
@@ -58,7 +58,7 @@ jobs:
  
   test:
     docker:
-      - image: circleci/python:3.8.0b1
+      - image: circleci/python:3.8.0
 
     working_directory: ~/repo
 
@@ -86,9 +86,9 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  smoke_test27:
+  smoke_test37:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.7.5
 
     working_directory: ~/repo
 
@@ -98,22 +98,52 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v27-dependencies-{{ checksum "requirements.txt" }}
+          - v37-dependencies-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v27-dependencies-
+          - v37-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            virtualenv venv --python=python2.7
+            python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip3 install -r requirements.txt
             pytest --cov=webmentiontools -m "not with_domain"
 
       - save_cache:
           paths:
             - ./venv
-          key: v27-dependencies-{{ checksum "requirements.txt" }}
+          key: v37-dependencies-{{ checksum "requirements.txt" }}
+
+  smoke_test36:
+    docker:
+      - image: circleci/python:3.6.9
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v36-dependencies-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v36-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+            pytest --cov=webmentiontools -m "not with_domain"
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v36-dependencies-{{ checksum "requirements.txt" }}
+
 
 workflows:
   version: 2
@@ -122,4 +152,5 @@ workflows:
       - build
       - lint
       - test
-      - smoke_test27
+      - smoke_test37
+      - smoke_test36
