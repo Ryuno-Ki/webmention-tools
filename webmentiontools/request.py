@@ -1,15 +1,20 @@
+"""
+Wrapper around requests
+"""
+from typing import Optional
+
 import requests
 
 import webmentiontools
 
 
-user_agent = "Webmention Tools/{} requests/{}".format(
+USER_AGENT: str = "Webmention Tools/{} requests/{}".format(
     webmentiontools.__version__,
     requests.__version__
 )
 
 
-def is_successful_response(response):
+def is_successful_response(response: requests.models.Response) -> bool:
     """
     Checks status code of response for success.
 
@@ -19,12 +24,15 @@ def is_successful_response(response):
     :rtype: bool
     """
     accepted_status_code = str(response.status_code).startswith("2")
-    content_type = response.headers.get("content-type")
-    accepted_content_type = content_type.startswith("text/html")
+    content_type: Optional[str] = response.headers.get("content-type")
+
+    accepted_content_type: bool = False
+    if content_type is not None:
+        accepted_content_type = content_type.startswith("text/html")
     return accepted_status_code and accepted_content_type
 
 
-def request_head_url(url):
+def request_head_url(url: str) -> requests.models.Response:
     """
     Makes a HEAD request against the url.
 
@@ -36,11 +44,11 @@ def request_head_url(url):
     return requests.head(
         url,
         allow_redirects=True,
-        headers={"User-Agent": user_agent}
+        headers={"User-Agent": USER_AGENT}
     )
 
 
-def request_get_url(url):
+def request_get_url(url: str) -> requests.models.Response:
     """
     Makes a GET request against the url.
 
@@ -52,11 +60,14 @@ def request_get_url(url):
     return requests.get(
         url,
         allow_redirects=True,
-        headers={"User-Agent": user_agent}
+        headers={"User-Agent": USER_AGENT}
     )
 
 
-def request_post_url(endpoint, source_url, target_url):
+def request_post_url(
+        endpoint: str,
+        source_url: str,
+        target_url: str) -> requests.models.Response:
     """
     Makes a POST request against the endpoint.
 
@@ -80,6 +91,6 @@ def request_post_url(endpoint, source_url, target_url):
         headers={
             "Accept": "text/*, application/*",
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent": user_agent
+            "User-Agent": USER_AGENT
         }
     )

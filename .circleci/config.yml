@@ -47,13 +47,16 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
-            pip3 install flake8
+            pip3 install -r requirements-dev.txt
 
       - run:
           name: run lint
           command: |
             . venv/bin/activate
+            pylint webmentiontools
+            pycodestyle webmentiontools
             flake8 webmentiontools
+            mypy webmentiontools
             flake8 test
  
   test:
@@ -71,6 +74,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
+            pip3 install -r requirements-dev.txt
 
       - run:
           name: run tests with coverage
@@ -108,6 +112,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
+            pip3 install -r requirements-dev.txt
             pytest --cov=webmentiontools -m "not with_domain"
 
       - save_cache:
@@ -137,6 +142,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
+            pip3 install -r requirements-dev.txt
             pytest --cov=webmentiontools -m "not with_domain"
 
       - save_cache:

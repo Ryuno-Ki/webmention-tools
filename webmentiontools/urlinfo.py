@@ -1,34 +1,42 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Scan a URL for WebMentions
+"""
+from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 import requests
-try:
-    from urllib.parse import urljoin
-except ImportError:  # Python2.7
-    from urlparse import urljoin
 
 
 class UrlInfo():
-
+    """
+    Gets some information about an URL.
+    """
     def __init__(self, url):
         self.url = url
         self.error = False
-        self.fetchHTML()
+        self.fetch_html()
 
-    def fetchHTML(self):
+    def fetch_html(self):
+        """
+        Parses the HTML of the site.
+        """
         self.soup = None
         self.data = dict()
         self.data['links_to'] = []
-        r = requests.get(self.url)
-        if r.status_code != 200:
+        response = requests.get(self.url)
+        if response.status_code != 200:
             self.error = True
             return
         # use apparent_encoding, seems to work better in the cases I tested.
-        r.encoding = r.apparent_encoding
-        self.soup = BeautifulSoup(r.text, 'html.parser')
+        response.encoding = response.apparent_encoding
+        self.soup = BeautifulSoup(response.text, 'html.parser')
 
-    def inReplyTo(self):
+    def in_reply_to(self):
+        """
+        Get the replies to links.
+        """
         if 'in_reply_to' in self.data:
             return self.data['in_reply_to']
         # Identify first class="u-in-reply-to" or rel="in-reply-to" link
@@ -41,8 +49,10 @@ class UrlInfo():
         self.data['in_reply_to'] = ir2_link
         return ir2_link
 
-    def pubDate(self):
-        # Get the time of the reply, if possible
+    def pub_date(self):
+        """
+        Get the time of the reply, if possible
+        """
         if 'pubDate' in self.data:
             return self.data['pubDate']
 
@@ -50,8 +60,12 @@ class UrlInfo():
         if ir2_time and ir2_time.has_attr('datetime'):
             self.data['pubDate'] = ir2_time['datetime']
             return ir2_time['datetime']
+        return None
 
     def title(self):
+        """
+        Extracts the title from the markup
+        """
         if 'title' in self.data:
             return self.data['title']
         # Get the title
@@ -60,6 +74,9 @@ class UrlInfo():
         return title
 
     def image(self):
+        """
+        Gets an image for this URL.
+        """
         if 'image' in self.data:
             return self.data['image']
 
@@ -89,31 +106,33 @@ class UrlInfo():
             if image:
                 self.data['image'] = urljoin(self.url, image)
                 return self.data['image']
+        return None
 
-    def snippetWithLink(self, url):
+    def snippet_with_link(self, url):
         """ This method will try to return the first
         <p> or <div> that contains an <a> tag linking to
         the given URL.
         """
         link = self.soup.find("a", attrs={'href': url})
         if link:
-            for p in link.parents:
-                if p.name in ('p', 'div'):
-                    return ' '.join(p.text.split()[0:30])
+            for parent in link.parents:
+                if parent.name in ('p', 'div'):
+                    return ' '.join(parent.text.split()[0:30])
         return None
 
-    def linksTo(self, url):
-        # Check if page links to a specific URL.
-        # please note that the test is done on the *exact* URL. If
-        # you want to ignore ?parameters, please remove them in advance
+    def links_to(self, url):
+        """
+        Check if page links to a specific URL.
+        please note that the test is done on the *exact* URL. If
+        you want to ignore ?parameters, please remove them in advance
+        """
         if url in self.data['links_to']:
             return True
-        r = self.soup.find("a", attrs={'href': url})
-        if r:
+        links = self.soup.find("a", attrs={'href': url})
+        if links:
             self.data['links_to'].append(url)
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == '__main__':

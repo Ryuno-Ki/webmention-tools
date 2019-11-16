@@ -1,16 +1,14 @@
-try:
-    from urllib.parse import urljoin, urlsplit, urlunsplit
-except ImportError:  # Python2.7
-    from urlparse import urljoin, urlsplit, urlunsplit
+"""
+Utility function for parsing.
+"""
+from typing import Optional
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
-from bs4 import BeautifulSoup
-try:
-    from httplink import parse_link_header
-except (ImportError, SyntaxError):  # Python 2.7
-    from httplink.backport import parse_link_header
+from bs4 import BeautifulSoup  # type: ignore
+from httplink import parse_link_header  # type: ignore
 
 
-def parse_headers(target_url, headers):
+def parse_headers(target_url: str, headers: dict) -> Optional[str]:
     """
     Searches the headers for a valid Webmention endpoint.
 
@@ -36,7 +34,7 @@ def parse_headers(target_url, headers):
     return webmention_link
 
 
-def parse_html(target_url, html):
+def parse_html(target_url: str, html: str) -> Optional[str]:
     """
     Searches the markup for a valid Webmention endpoint.
 
@@ -65,7 +63,7 @@ def parse_html(target_url, html):
     return webmentions[0]
 
 
-def _make_case_insensitive(case_sensitive_dict):
+def _make_case_insensitive(case_sensitive_dict: dict) -> dict:
     result = {}
     for item in case_sensitive_dict.items():
         key = item[0].lower()
@@ -74,7 +72,7 @@ def _make_case_insensitive(case_sensitive_dict):
     return result
 
 
-def _ensure_url(target_url, url_string=""):
+def _ensure_url(target_url: str, url_string: str = "") -> str:
     parts = []
 
     parsed = urlsplit(url_string)

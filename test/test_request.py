@@ -9,7 +9,7 @@ from webmentiontools.request import (
     request_get_url,
     request_head_url,
     request_post_url,
-    user_agent
+    USER_AGENT
 )
 
 from .endpoints import WEBMENTION_ROCKS_TESTS
@@ -17,10 +17,10 @@ from .endpoints import WEBMENTION_ROCKS_TESTS
 
 class RequestTestCase(unittest.TestCase):
     def test_user_agent(self):
-        assert "Webmention Tools" in user_agent
-        assert webmentiontools.__version__ in user_agent
-        assert "requests" in user_agent
-        assert requests.__version__ in user_agent
+        assert "Webmention Tools" in USER_AGENT
+        assert webmentiontools.__version__ in USER_AGENT
+        assert "requests" in USER_AGENT
+        assert requests.__version__ in USER_AGENT
 
     @pytest.mark.integration
     def test_is_successful_response(self):
