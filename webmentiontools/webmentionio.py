@@ -11,6 +11,16 @@ import requests
 class WebmentionIO():
     """
     Wrapper for interacting.
+
+    Example:
+    webmention_io_token = None # or set your token.
+    wio = WebmentionIO(webmention_io_token)
+    ret = wio.links_to_url('http://indiewebcamp.com/webmention')
+    if not ret:
+        print(wio.error)
+    else:
+        for l in ret['links']:
+            print(l['id'], l['source'], l['verified_date'])
     """
     def __init__(self, access_token=None):
         self.access_token = access_token
@@ -49,17 +59,3 @@ class WebmentionIO():
         if not links:
             return False
         return links
-
-
-if __name__ == '__main__':
-    """
-    Example:
-    webmention_io_token = None # or set your token.
-    wio = WebmentionIO(webmention_io_token)
-    ret = wio.links_to_url('http://indiewebcamp.com/webmention')
-    if not ret:
-        print(wio.error)
-    else:
-        for l in ret['links']:
-            print(l['id'], l['source'], l['verified_date'])
-    """  # pylint: disable=pointless-string-statement

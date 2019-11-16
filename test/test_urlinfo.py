@@ -29,14 +29,14 @@ class UrlInfoTestCase(unittest.TestCase):
         mock_reply_to = 'http://in.reply/to'
         url_info = UrlInfo(mock_url)
         url_info.data['in_reply_to'] = mock_reply_to
-        in_reply_to = url_info.inReplyTo()
+        in_reply_to = url_info.in_reply_to()
         self.assertEqual(in_reply_to, mock_reply_to)
 
     def test_pubDate(self):
         mock_pubDate = 'now'
         url_info = UrlInfo(mock_url)
         url_info.data['pubDate'] = mock_pubDate
-        pubDate = url_info.pubDate()
+        pubDate = url_info.pub_date()
         self.assertEqual(pubDate, mock_pubDate)
 
     def test_title(self):
@@ -56,13 +56,13 @@ class UrlInfoTestCase(unittest.TestCase):
     def test_snippetWithLink(self):
         mock_url = 'https://http.cat/200'
         url_info = UrlInfo(mock_url)
-        mock_snippet = url_info.snippetWithLink(mock_url)
+        mock_snippet = url_info.snippet_with_link(mock_url)
         self.assertEqual(mock_snippet, None)
 
     def test_linksTo(self):
         mock_links_to = 'https://http.cat/404'
         url_info = UrlInfo(mock_url)
-        links_to = url_info.linksTo(mock_links_to)
+        links_to = url_info.links_to(mock_links_to)
         self.assertEqual(links_to, False)
 
 

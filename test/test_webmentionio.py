@@ -28,18 +28,14 @@ class WebmentionIOTestCase(unittest.TestCase):
     def test_linksToURL(self):
         mock_url = 'http://example.com'
         webmention_io = WebmentionIO()
-        links = webmention_io.linksToURL(mock_url)
+        links = webmention_io.links_to_url(mock_url)
         self.assertEqual(links, {'links': []})
 
     def test_linksToDomain(self):
         mock_domain = 'example.com'
         webmention_io = WebmentionIO()
-        links = webmention_io.linksToDomain(mock_domain)
+        links = webmention_io.links_to_domain(mock_domain)
         self.assertEqual(links, False)
-
-    # def test_linksToAll(self):
-    #     webmention_io = WebmentionIO()
-    #     self.assertEqual(True, True)
 
 
 if __name__ == '__main__':
