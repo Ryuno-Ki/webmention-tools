@@ -1,3 +1,4 @@
 beautifulsoup4==4.8.1
 httplink==0.1.0
 requests==2.22.0
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
